@@ -1,0 +1,31 @@
+{
+  "name": "ng-tree-select",
+  "description": "Recursive angular.js tree select component",
+  "main": "index.js",
+  "authors": [
+    "Vasily Liaskovsky <vasily.liaskovsky@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "tree",
+    "recursive",
+    "select"
+  ],
+  "dependencies": {
+    "angular": "^1.6.4",
+    "angular-animate": "^1.6.4",
+    "angular-recursion": "^1.0.5",
+    "ng-css-injector": "^1.0.1",
+    "ng-slide-animations": "^1.1.1"
+  },
+  "homepage": "https://github.com/blr-Oliver/ng-tree-select",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "tmp"
+  ]
+}

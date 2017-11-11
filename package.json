@@ -1,0 +1,45 @@
+{
+  "name": "ng-tree-select",
+  "version": "1.0.0",
+  "description": "Recursive angular.js tree select component",
+  "main": "index.js",
+  "scripts": {
+    "build": "gulp rebuild",
+    "prepublish": "npm run-script build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blr-Oliver/ng-tree-select.git"
+  },
+  "keywords": [
+    "angular",
+    "tree",
+    "recursive",
+    "select"
+  ],
+  "dependencies": {
+    "angular": "^1.6.4",
+    "angular-animate": "^1.6.4",
+    "angular-recursion": "^1.0.5",
+    "ng-css-injector": "^1.0.1",
+    "ng-slide-animations": "^1.1.1"
+  },
+  "devDependencies": {
+    "del": "^3.0",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-clean-css": "^3.9.0",
+    "gulp-concat-css": "^2.3.0",
+    "gulp-file-insert": "^1.0.3",
+    "gulp-pretty-data": "^0.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.6.1",
+    "gulp-sass": "^3.1.0",
+    "gulp-uglify": "^3.0.0"
+  },
+  "author": "Vasily Liaskovsky <vasily.liaskovsky@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/blr-Oliver/ng-tree-select/issues"
+  },
+  "homepage": "https://github.com/blr-Oliver/ng-tree-select#readme"
+}
