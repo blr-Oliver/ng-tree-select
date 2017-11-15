@@ -1,9 +1,12 @@
 {
   "name": "ng-tree-select",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Recursive angular.js tree select component",
   "main": "ng-tree-select.js",
-  "files": ["ng-tree-select.js", "ng-tree-select.min.js"],
+  "files": [
+    "ng-tree-select.js",
+    "ng-tree-select.min.js"
+  ],
   "scripts": {
     "build": "gulp rebuild",
     "prepublish": "npm run-script build"
@@ -24,7 +27,7 @@
     "ng-css-injector": "^1.0.1",
     "ng-slide-animations": "^1.1.1"
   },
-  "optionalDependencies" : {
+  "optionalDependencies": {
     "angular-animate": "^1.6.4"
   },
   "devDependencies": {
