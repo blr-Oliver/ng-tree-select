@@ -27,9 +27,11 @@ angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnim
         $scope.$apply(target + ' = true');
         //recompute selector each time because name attribute itself may change
         var selector = 'input[name="' + element.attr('name') + '"]';
-        angular.element(filter.call($document[0].querySelectorAll(selector), function(e){
+        filter.call($document[0].querySelectorAll(selector), function(e){
           return e !== element[0];
-        })).triggerHandler('deselect');
+        }).forEach(function(e){
+          angular.element(e).triggerHandler('deselect');
+        });
       });
       element.bind('deselect', function(){
         $scope.$apply(target + ' = false');
