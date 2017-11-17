@@ -13,6 +13,7 @@
   </ul>
   <ul ng-if="items.length >= 10">
     <li><select ng-model="items.active" boolean-select ng-class="{active: items.active, inactive : items.active === null}">
+        <option ng-value="null">&mdash;</option>
         <option ng-repeat="item in items" ng-value="item" boolean-select-option="item.active" ng-bind="item.name"></option>
       </select> <tree-select ng-if="items.active && items.active.children.length" items="items.active.children" depth="depth + 1"></tree-select></li>
   </ul>
