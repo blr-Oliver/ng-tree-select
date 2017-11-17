@@ -7,7 +7,7 @@
   </ul>
   <ul ng-if="items.length > 1 && items.length < 10">
     <li ng-repeat="item in items"><label ng-class="{active: item.active, inactive : item.active === false}">
-        <input type="radio" name="tree-{{$treeSelectId}}-level-{{depth}}" boolean-radio="item.active" ng-value="item" ng-model="items.active" />
+        <input type="{{item.active ? 'checkbox' : 'radio'}}" name="tree-{{$treeSelectId}}-level-{{depth}}" boolean-radio="item.active" />
         <span ng-bind="item.name"></span>
       </label> <tree-select ng-if="item.active && item.children.length" items="item.children" depth="depth + 1"></tree-select></li>
   </ul>
