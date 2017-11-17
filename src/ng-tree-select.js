@@ -12,6 +12,7 @@ angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnim
         compile: function(element){
           return RecursionHelper.compile(element, function($scope){
             $scope.depth = $scope.depth || 0;
+            $scope.$treeSelectId = $scope.$id;            
           });
         }
       }
