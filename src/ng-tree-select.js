@@ -22,9 +22,9 @@ angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnim
     link: function($scope, element, attrs){
       var target = attrs.booleanRadio;
       element.prop('checked', $parse(target)($scope));
-      element.bind('click change input', function(){
-        //TODO add direct DOM property check
-        $scope.$apply(target + ' = true');
+      element.bind('click', function(){
+        if(this.checked){
+          $scope.$applyAsync(target + ' = true');
         //recompute selector each time because name attribute itself may change
         var selector = 'input[name="' + element.attr('name') + '"]';
         filter.call($document[0].querySelectorAll(selector), function(e){
@@ -32,9 +32,12 @@ angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnim
         }).forEach(function(e){
           angular.element(e).triggerHandler('deselect');
         });
+        }else
+          $scope.$applyAsync(target + ' = false');
       });
       element.bind('deselect', function(){
-        $scope.$apply(target + ' = false');
+        this.checked = false;
+        $scope.$applyAsync(target + ' = false');
       })
     }
   }
