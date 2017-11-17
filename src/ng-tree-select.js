@@ -1,5 +1,6 @@
 angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnimations']).directive('treeSelect',
     ['RecursionHelper', function(RecursionHelper){
+      var DEFAULT_LAYOUT = 10;
       return {
         restrict: 'E',
         replace: true,
@@ -7,12 +8,26 @@ angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnim
         cssUrl: 'ng-tree-select.css',
         scope: {
           items: '=',
-          depth: '=?'
+          depth: '=?',
+          layout: '@?'
         },
         compile: function(element){
           return RecursionHelper.compile(element, function($scope){
             $scope.depth = $scope.depth || 0;
-            $scope.$treeSelectId = $scope.$id;            
+            if(!isNaN(+$scope.layout))
+              $scope.layout = +$scope.layout;
+            if(typeof ($scope.layout) === 'string'){
+              $scope.layout = $scope.layout.trim().toLowerCase();
+              switch ($scope.layout) {
+              case 'radio':
+              case 'select':
+                break;
+              default:
+                $scope.layout = DEFAULT_LAYOUT;
+              }
+            }else
+              $scope.layout = $scope.layout > 0 ? $scope.layout : DEFAULT_LAYOUT;
+            $scope.$treeSelectId = $scope.$id;
           });
         }
       }
@@ -26,13 +41,13 @@ angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnim
       element.bind('click', function(){
         if(this.checked){
           $scope.$applyAsync(target + ' = true');
-        //recompute selector each time because name attribute itself may change
-        var selector = 'input[name="' + element.attr('name') + '"]';
-        filter.call($document[0].querySelectorAll(selector), function(e){
-          return e !== element[0];
-        }).forEach(function(e){
-          angular.element(e).triggerHandler('deselect');
-        });
+          //recompute selector each time because name attribute itself may change
+          var selector = 'input[name="' + element.attr('name') + '"]';
+          filter.call($document[0].querySelectorAll(selector), function(e){
+            return e !== element[0];
+          }).forEach(function(e){
+            angular.element(e).triggerHandler('deselect');
+          });
         }else
           $scope.$applyAsync(target + ' = false');
       });
