@@ -5,6 +5,7 @@ var concatCss = require('gulp-concat-css');
 var cleanCss = require('gulp-clean-css');
 var minifyXML = require('gulp-pretty-data');
 var insert = require('gulp-file-insert');
+var replace = require('gulp-replace');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 
@@ -32,6 +33,7 @@ gulp.task('html', function(done){
       preserveComments: false,
       extensions: { 'html': 'xml' }
     }))
+    .pipe(replace("'", "\\'"))
     .pipe(gulp.dest('tmp', {overwrite: true}))
     .on('end', done);
 });
