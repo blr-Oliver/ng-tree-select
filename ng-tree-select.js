@@ -1,8 +1,76 @@
 angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnimations']).directive('treeSelect',
     ['RecursionHelper', function(RecursionHelper){
       var DEFAULT_LAYOUT = 10;
+
+      function initScope($scope){
+        $scope.depth = $scope.depth || 0;
+        if(!isNaN(+$scope.layout))
+          $scope.layout = +$scope.layout;
+        if(typeof ($scope.layout) === 'string'){
+          $scope.layout = $scope.layout.trim().toLowerCase();
+          switch ($scope.layout) {
+          case 'radio':
+          case 'select':
+            break;
+          default:
+            $scope.layout = DEFAULT_LAYOUT;
+          }
+        }else
+          $scope.layout = $scope.layout > 0 ? $scope.layout : DEFAULT_LAYOUT;
+        $scope.$treeSelectId = $scope.$id;
+      }
+
+      function addActiveWatcher($scope){
+        $scope.$watch(function(){
+          return $scope.items && $scope.items.map(function(item){
+            return !!item.active;
+          })
+        }, function(newValue){
+          $scope.$emit('ngTreeSelect.change', $scope.$treeSelectId);
+          if($scope.items)
+            $scope.items.active = $scope.items[newValue.indexOf(true)]
+        }, true);
+      }
+
+      function initNgModel($scope, ngModel){
+
+        function getDeepActiveItem(items){
+          for (var item = items && items.active; item && item.children && item.children.active;)
+            item = item.children.active;
+          return item;
+        }
+
+        function activatePath(items, selected){
+          var active = items.active && updateActive(items.active) || undefined;
+          for (var i = 0; i < items.length; ++i){
+            if(items[i] !== items.active && updateActive(items[i])){
+              if(active)
+                items[i].active = false;
+              else
+                active = items[i];
+            }
+          }
+          return !!(items.active = active);
+
+          function updateActive(item){
+            return (item.active = item === selected || item.children && activatePath(item.children, selected)) && item;
+          }
+        }
+
+        ngModel.$render = function(){
+          $scope.items && activatePath($scope.items, ngModel.$viewValue);
+        }
+
+        $scope.$on('ngTreeSelect.change', function(){
+          $scope.$evalAsync(function(){
+            ngModel.$setViewValue(getDeepActiveItem($scope.items));
+          });
+        });
+      }
+
       return {
         restrict: 'E',
+        require: ['?ngModel'],
         replace: true,
         templateUrl: 'ng-tree-select.html',
         cssUrl: 'ng-tree-select.css',
@@ -12,22 +80,11 @@ angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnim
           layout: '@?'
         },
         compile: function(element){
-          return RecursionHelper.compile(element, function($scope){
-            $scope.depth = $scope.depth || 0;
-            if(!isNaN(+$scope.layout))
-              $scope.layout = +$scope.layout;
-            if(typeof ($scope.layout) === 'string'){
-              $scope.layout = $scope.layout.trim().toLowerCase();
-              switch ($scope.layout) {
-              case 'radio':
-              case 'select':
-                break;
-              default:
-                $scope.layout = DEFAULT_LAYOUT;
-              }
-            }else
-              $scope.layout = $scope.layout > 0 ? $scope.layout : DEFAULT_LAYOUT;
-            $scope.$treeSelectId = $scope.$id;
+          return RecursionHelper.compile(element, function($scope, $element, $attrs, controllers){
+            initScope($scope);
+            addActiveWatcher($scope);
+            if(controllers[0])
+              initNgModel($scope, controllers[0]);
           });
         }
       }
@@ -36,11 +93,13 @@ angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnim
   return {
     restrict: 'A',
     link: function($scope, element, attrs){
-      var target = attrs.booleanRadio;
-      element.prop('checked', $parse(target)($scope));
+      var target = $parse(attrs.booleanRadio);
+      element.prop('checked', target($scope));
       element.bind('click', function(){
         if(this.checked){
-          $scope.$applyAsync(target + ' = true');
+          $scope.$applyAsync(function(){
+            target.assign($scope, true);
+          });
           //recompute selector each time because name attribute itself may change
           var selector = 'input[name="' + element.attr('name') + '"]';
           filter.call($document[0].querySelectorAll(selector), function(e){
@@ -49,11 +108,15 @@ angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnim
             angular.element(e).triggerHandler('deselect');
           });
         }else
-          $scope.$applyAsync(target + ' = false');
+          $scope.$applyAsync(function(){
+            target.assign($scope, false);
+          });
       });
       element.bind('deselect', function(){
         this.checked = false;
-        $scope.$applyAsync(target + ' = false');
+        $scope.$applyAsync(function(){
+          target.assign($scope, false);
+        });
       })
     }
   }
@@ -89,6 +152,6 @@ angular.module('ngTreeSelect', ['RecursionHelper', 'ngCssInjector', 'ngSlideAnim
     leave: slideAnimations.up,
   }
 }]).run(['$templateCache', function($templateCache){
-  $templateCache.put('ng-tree-select.html', '<div class="tree-select"><ul ng-if="items.length == 1"><li><label ng-class="{active: items[0].active}"><input type="checkbox" name="tree-{{$treeSelectId}}-level-{{depth}}" ng-model="items[0].active" ng-click="items.active = items[0].active ? items[0] : null" /><span ng-bind="items[0].name"></span></label><tree-select ng-if="items[0].active && items[0].children.length" items="items[0].children" depth="depth + 1" layout="{{items[0].layout || layout}}"></tree-select></li></ul><ul ng-if="items.length > 1 && (layout === \'radio\' || items.length <= layout)"><li ng-repeat="item in items"><label ng-class="{active: item.active, inactive : item.active === false}"><input type="{{item.active ? \'checkbox\' : \'radio\'}}" name="tree-{{$treeSelectId}}-level-{{depth}}" boolean-radio="item.active" /><span ng-bind="item.name"></span></label><tree-select ng-if="item.active && item.children.length" items="item.children" depth="depth + 1" layout="{{item.layout || layout}}"></tree-select></li></ul><ul ng-if="layout === \'select\' || items.length > layout"><li><select ng-model="items.active" boolean-select ng-class="{active: items.active, inactive : items.active === null}"><option ng-value="null">&mdash;</option><option ng-repeat="item in items" ng-value="item" boolean-select-option="item.active" ng-bind="item.name"></option></select><tree-select ng-if="items.active && items.active.children.length" items="items.active.children" depth="depth + 1" layout="{{items.active.layout || layout}}"></tree-select></li></ul></div>');
+  $templateCache.put('ng-tree-select.html', '<div class="tree-select"><ul ng-if="layout === \'radio\' || items.length <= layout"><li ng-repeat="item in items"><label ng-class="{active: item.active, inactive : item.active === false}"><input type="{{items.length > 1 && !item.active ? \'radio\' : \'checkbox\'}}" name="tree-{{$treeSelectId}}-level-{{depth}}" boolean-radio="item.active" /><span ng-bind="item.name"></span></label><tree-select ng-if="item.active && item.children.length" items="item.children" depth="depth + 1" layout="{{item.layout || layout}}"></tree-select></li></ul><ul ng-if="layout === \'select\' || items.length > layout"><li><select boolean-select ng-class="{active: items.active, inactive : items.active === null}"><option>&mdash;</option><option ng-repeat="item in items" boolean-select-option="item.active" ng-bind="item.name" ng-selected="item.active"></option></select><tree-select ng-if="items.active && items.active.children.length" items="items.active.children" depth="depth + 1" layout="{{items.active.layout || layout}}"></tree-select></li></ul></div>');
   $templateCache.put('ng-tree-select.css', '.tree-select{padding-left:1em;overflow-y:hidden;transition-property:height;transition-duration:.2s;transition-timing-function:ease-in}.tree-select>ul{list-style-type:none;padding-left:0}.tree-select label{display:inline-block;height:1.5em;margin-bottom:0;margin-top:0;white-space:nowrap}.tree-select label>*{vertical-align:middle;white-space:nowrap}.tree-select label>input[type=checkbox],.tree-select label>input[type=radio]{margin:0;width:1em;height:1em}.tree-select label>span{padding-left:.3em}.tree-select select{padding-left:1em;font-size:100%;font-family:inherit;height:1.3em;margin-bottom:.2em}');
 }]);

@@ -1,3 +1,9 @@
+## [0.2.0] - 2017-11-19
+### Added
+- `ng-model` is supported
+### Fixed
+- Support for `active` property on the list is restored.
+
 ## [0.1.0] - 2017-11-17
 ### Added
 - Selected radio-button changes to checkbox.
