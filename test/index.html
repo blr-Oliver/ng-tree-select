@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Test page</title>
+
+<script src="/test/lib/angular.js"></script>
+<script src="/test/lib/angular-recursion.js"></script>
+<script src="/test/lib/ng-slide-animations.js"></script>
+<script src="/test/lib/ng-css-injector.js"></script>
+<script src="/ng-tree-select.js"></script>
+<script src="/test/index.js"></script>
+
+</head>
+<body ng-app="testNgTreeSelect" ng-controller="TestCtrl">
+  <tree-select items="data" ng-model="selected"></tree-select>
+  {{selected.name}}
+</body>
+</html>

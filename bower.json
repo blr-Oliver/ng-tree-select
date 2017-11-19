@@ -23,8 +23,20 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "test",
+    "**/test",
     "tests",
     "tmp"
-  ]
+  ],
+  "install": {
+    "options": {
+      "includePackageNameInInstallPath": false
+    },
+    "path": "test/lib",
+    "sources": {
+      "angular": "bower_components/angular/angular.js",
+      "angular-recursion": "bower_components/angular-recursion/angular-recursion.js",
+      "ng-css-injector": "bower_components/ng-css-injector/ng-css-injector.js",
+      "ng-slide-animations": "bower_components/ng-slide-animations/src/ng-slide-animations.js"
+    }
+  }
 }
