@@ -1,20 +1,14 @@
 <div class="tree-select">
-  <ul ng-if="items.length == 1">
-    <li><label ng-class="{active: items[0].active}">
-        <input type="checkbox" name="tree-{{$treeSelectId}}-level-{{depth}}" ng-model="items[0].active" ng-click="items.active = items[0].active ? items[0] : null" />
-        <span ng-bind="items[0].name"></span>
-      </label> <tree-select ng-if="items[0].active && items[0].children.length" items="items[0].children" depth="depth + 1" layout="{{items[0].layout || layout}}"></tree-select></li>
-  </ul>
-  <ul ng-if="items.length > 1 && (layout === 'radio' || items.length <= layout)">
+  <ul ng-if="layout === 'radio' || items.length <= layout">
     <li ng-repeat="item in items"><label ng-class="{active: item.active, inactive : item.active === false}">
-        <input type="{{item.active ? 'checkbox' : 'radio'}}" name="tree-{{$treeSelectId}}-level-{{depth}}" boolean-radio="item.active" />
+        <input type="{{items.length > 1 && !item.active ? 'radio' : 'checkbox'}}" name="tree-{{$treeSelectId}}-level-{{depth}}" boolean-radio="item.active" />
         <span ng-bind="item.name"></span>
       </label> <tree-select ng-if="item.active && item.children.length" items="item.children" depth="depth + 1" layout="{{item.layout || layout}}"></tree-select></li>
   </ul>
   <ul ng-if="layout === 'select' || items.length > layout">
-    <li><select ng-model="items.active" boolean-select ng-class="{active: items.active, inactive : items.active === null}">
-        <option ng-value="null">&mdash;</option>
-        <option ng-repeat="item in items" ng-value="item" boolean-select-option="item.active" ng-bind="item.name"></option>
+    <li><select boolean-select ng-class="{active: items.active, inactive : items.active === null}">
+        <option>&mdash;</option>
+        <option ng-repeat="item in items" boolean-select-option="item.active" ng-bind="item.name" ng-selected="item.active"></option>
       </select> <tree-select ng-if="items.active && items.active.children.length" items="items.active.children" depth="depth + 1" layout="{{items.active.layout || layout}}"></tree-select></li>
   </ul>
 </div>
